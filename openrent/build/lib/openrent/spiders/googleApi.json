@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "openrent",
+  "private_key_id": "69fd9f01dba6a845ad871bb9e05921abbe01e5b0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC081ASsCqQ/n4D\nOwMOXFXEZLJrYRcr2rfT5Cp2MLne/8noWpagQYMuV8kYjKKtTjpcZREdbiwTzLZD\nmKYteoATTTRejdpXbNsP7FpfxpKJSHp/oJxoWRf//bVNdfneGSGSzWXkjBF0sFpf\n9VtYDpfFQ9ej22F0W/33yeK7GXWus0ov6FFaLVAPodXh/YMVCQ/hjRsG0etiIphv\no6J53Aga0t0ji9IWjRM/PbzrTzfAvEqguozK9wrPnRi/0w5Gle5XS6Dn9+rg8EsQ\nP0IXLD/rilln8J9NWyJKWlH3We7LgR5jX/VZRo0ZfXvtKuqzuyJnm9yZQ7ed8TCB\nkEK/rR3ZAgMBAAECggEADKH/fTyEDkEcLE7Qgu5GlRpYG/fIabkAdDg10DBM67EF\nKDX51diZB1Fc4lxAJ7QCTkzGhfzY8i1srJmxwVNP8XkGftLts0SP4yPTt+PJu3Ce\nT753aPAOZUJxx8WEoyEzRzfUhSETv2cn+hLLtKE5Lo4S1hdU7Y4WFBhpvjjz7rUq\n20+b8ALXz/Sj18gApLyXY00+g0Hf4oDZSab8GeAk3LpgVuNHBYxcC2ylhSULpq54\ncjbrzPAgUNgGFAM2uqhvzieD5U+hWIJG3kn8Wk9tiWmlMQejmXHnQvYKvDqAfF2o\nMtNe5W02SC0zQofS1CmdH4c3avoJOOdQkm4I+Oi6QQKBgQDYwVR16FcsqfKcLW61\nkDQalW8aaMG2t2pBedV0nroEtvq1wJXdfkdHeNiH25u4NrfGwfMO0ZA89GxFQZNo\ntY8FsEA4DKRLaQ0tQXf6vKyzjedKq4NJQECBQQnn/2Pm2x8dFTagrzUfWyaNEIBh\nQyx1pjRsrvJ0QErIXUV4EwOtmQKBgQDVtmvkz1K0IKZVV8VE3UyhxHY/pZ24eZTX\n0R7smmdt0wVhSe4JToOTUVyWOeRek+9tnLGZouBaG5mgxyTzhXpIg39PjF7PvWZ6\nFuFfTFrPgn3vTWhM3QjMADnY8M6Ufz9cQ0SaDHzxM4ZAMiJ79MKqe0N6K+/3S75Q\nQ8JNkdCaQQKBgQDK3vAJR0PINuwuxssWvng15WVOh3u/Yx3dWIWzmBgs74Hp+O2L\nmHRoba/kQGQX34bUTZULapMgqfhoPb8VQtExFsyUaSiguBswH1WHZW4SxB8VoT/I\noI1/LHt0G3HKkY4mb0No03PZ/Dsxzp8J6ZBEMSJiEsA0lDQqIjox70IDCQKBgGFf\nMGGcJK51gdO4neT2f4flH4t4RhhbLPn4CgL7hsx/LSBast4Cq+hfVbQMxIRjGt/y\nWOkLUPU9Rg3/LlLWKhUH9OWlqz0zqpFOA3mMLIQHjKGPv0nmG6/3GmRBs53tLE05\nSPR3ZCXxt+Vf8l5P8rICX4g2pKskE542gT0ehtEBAoGAa6KkY+5iDak6ZWXLEVJ5\naqJp12o/Q0EUzmJkydypezfxj4mw+lmgGCUxAbNbZabwA5OHgYV9/he8Mhmj/jH8\n8l16f72hj593uW5vUwmFLNfwdaxeXvM0aiMuS1l+JmRxq7zgQhN0qckkQ7LvniMa\npUlCDKAoO9YjJ2zsWzdPwls=\n-----END PRIVATE KEY-----\n",
+  "client_email": "openrentscraper@openrent.iam.gserviceaccount.com",
+  "client_id": "109439620910957924786",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/openrentscraper%40openrent.iam.gserviceaccount.com"
+}
