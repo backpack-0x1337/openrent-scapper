@@ -1,0 +1,1 @@
+([('main', '/Users/backpack/Dev/openrent-scapper/dist/main', 'EXECUTABLE')],)
