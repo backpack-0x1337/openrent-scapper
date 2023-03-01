@@ -3,10 +3,20 @@ import os
 
 import scrapy
 import re
+import gspread
+
+gc = gspread.service_account(filename='googleApi.json')
+
+sh = gc.open('openrent-p').sheet1
+
+
+def get_last_property_id():
+    return sh.get_all_records()[-1].get('property_id')
+
 
 class OpenRentSpider(scrapy.Spider):
     name = 'openrent'
-    current_id = 1615916 + 1
+    current_id = get_last_property_id() + 1
     total_property = 1800001
     max_id = current_id + total_property
     base_url = 'https://www.openrent.co.uk/'
@@ -31,10 +41,25 @@ class OpenRentSpider(scrapy.Spider):
         return True
 
     def parse(self, response):
-        #response.css('strong::text').getall()[4],
+        # response.css('strong::text').getall()[4],
         try:
-            if response.status != 404 and not response.xpath("//div[@class='alert alert-warning mt-1']/p/text()").extract():
+            if response.status != 404 and not response.xpath(
+                    "//div[@class='alert alert-warning mt-1']/p/text()").extract():
 
+                sh.append_row([response.url, response.css('h1.property-title::text').get(), self.current_id,
+                               response.css('h1.property-title::text').get().split(' ')[-1],
+                               response.xpath("///td/a/@href").extract()[0].split('%')[1],
+                               response.css('h3.price-title::text').getall()[0].replace('£', ''),
+                               response.xpath("//td/strong/text()").extract()[0],
+                               response.xpath("//td/strong/text()").extract()[1],
+                               response.xpath("//td/strong/text()").extract()[2],
+                               # 'price-per-Occu.': int(response.css('h3.price-title::text').getall()[0].replace('£', '')) / int(response.css('strong::text').getall()[4]),
+                               datetime.datetime.strptime(
+                                   response.css('source').attrib['srcset'].split('mobile')[-1][0:8], '%d%m%Y').strftime(
+                                   '%Y%m%d'),
+                               "",
+                               response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
+                               response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]])
                 yield {
                     'link': response.url,
 
@@ -47,7 +72,8 @@ class OpenRentSpider(scrapy.Spider):
                     'bath': response.xpath("//td/strong/text()").extract()[1],
                     'max-tenants': response.xpath("//td/strong/text()").extract()[2],
                     # 'price-per-Occu.': int(response.css('h3.price-title::text').getall()[0].replace('£', '')) / int(response.css('strong::text').getall()[4]),
-                    'list-date': datetime.datetime.strptime(response.css('source').attrib['srcset'].split('mobile')[-1][0:8], '%d%m%Y').strftime('%Y%m%d'),
+                    'list-date': datetime.datetime.strptime(
+                        response.css('source').attrib['srcset'].split('mobile')[-1][0:8], '%d%m%Y').strftime('%Y%m%d'),
                     'let-agreed': "",
                     'Furnishing': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                     'EPC Rating': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]
@@ -55,6 +81,22 @@ class OpenRentSpider(scrapy.Spider):
                     # 'price-weekly': response.css('h3.price-title::text').getall()[1].replace('£', '')
                 }
             elif response.xpath("//div[@class='alert alert-warning mt-1']/p/text()").extract():
+                sh.append_row([response.url, response.css('h1.property-title::text').get(), self.current_id,
+                               response.css('h1.property-title::text').get().split(' ')[-1],
+                               response.xpath("///td/a/@href").extract()[0].split('%')[1],
+                               response.css('h3.price-title::text').getall()[0].replace('£', ''),
+                               response.xpath("//td/strong/text()").extract()[0],
+                               response.xpath("//td/strong/text()").extract()[1],
+                               response.xpath("//td/strong/text()").extract()[2],
+                               # 'price-per-Occu.': int(response.css('h3.price-title::text').getall()[0].replace('£', '')) / int(response.css('strong::text').getall()[4]),
+                               datetime.datetime.strptime(
+                                   response.css('source').attrib['srcset'].split('mobile')[-1][0:8], '%d%m%Y').strftime(
+                                   '%Y%m%d'),
+                               datetime.datetime.strptime((re.search(r'\d{1,2}\s\w+\s\d{4}', response.xpath(
+                                   "//div[@class='alert alert-warning mt-1']/p/text()").extract()[0]).group()),
+                                                          '%d %B %Y').strftime('%Y%m%d'),
+                               response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
+                               response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]])
                 yield {
                     'link': response.url,
                     'title': response.css('h1.property-title::text').get(),
@@ -65,8 +107,11 @@ class OpenRentSpider(scrapy.Spider):
                     'bed': response.xpath("//td/strong/text()").extract()[0],
                     'bath': response.xpath("//td/strong/text()").extract()[1],
                     'max-tenants': response.xpath("//td/strong/text()").extract()[2],
-                    'list-date': datetime.datetime.strptime(response.css('source').attrib['srcset'].split('mobile')[-1][0:8], '%d%m%Y').strftime('%Y%m%d'),
-                    'let-agreed': datetime.datetime.strptime((re.search(r'\d{1,2}\s\w+\s\d{4}', response.xpath("//div[@class='alert alert-warning mt-1']/p/text()").extract()[0]).group()), '%d %B %Y').strftime('%Y%m%d'),
+                    'list-date': datetime.datetime.strptime(
+                        response.css('source').attrib['srcset'].split('mobile')[-1][0:8], '%d%m%Y').strftime('%Y%m%d'),
+                    'let-agreed': datetime.datetime.strptime((re.search(r'\d{1,2}\s\w+\s\d{4}', response.xpath(
+                        "//div[@class='alert alert-warning mt-1']/p/text()").extract()[0]).group()),
+                                                             '%d %B %Y').strftime('%Y%m%d'),
                     'Furnishing': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                     'EPC Rating': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]
                 }
@@ -85,7 +130,6 @@ class OpenRentSpider(scrapy.Spider):
                 'Furnishing': 'error',
                 'EPC Rating': 'error'
             }
-
 
         self.current_id += 1
         next_url = self.base_url + str(self.current_id)
