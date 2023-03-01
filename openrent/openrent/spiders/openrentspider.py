@@ -25,7 +25,7 @@ class OpenRentSpider(scrapy.Spider):
     handle_httpstatus_list = [404, 429]
     custom_settings = {
         # 'DOWNLOAD_DELAY': 3,
-        # 'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_ENABLED': True,
         # 'RANDOMIZE_DOWNLOAD_DELAY': False,
         'FEEDS': {
             'openrent-p.csv': {
