@@ -48,7 +48,7 @@ class OpenRentUpdateSpider(scrapy.Spider):
                 self.counter = 1
 
             if response.status == 429:
-                sleep(60)
+                sleep(600)
 
             elif response.status != 404 and not response.xpath(
                     "//div[@class='alert alert-warning mt-1']/p/text()").extract():

@@ -45,7 +45,7 @@ class OpenRentSpider(scrapy.Spider):
         try:
 
             if response.status == 429:
-                sleep(60)
+                sleep(600)
                 self.current_id -= 1
 
             elif response.status != 404 and not response.xpath(
