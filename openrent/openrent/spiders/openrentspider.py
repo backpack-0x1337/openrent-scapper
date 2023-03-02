@@ -17,7 +17,7 @@ def get_last_property_id():
 
 class OpenRentSpider(scrapy.Spider):
     name = 'openrent'
-    current_id = get_last_property_id() + 1 + 10000000
+    current_id = get_last_property_id() + 1
     total_property = 1800001
     max_id = current_id + total_property
     base_url = 'https://www.openrent.co.uk/'
