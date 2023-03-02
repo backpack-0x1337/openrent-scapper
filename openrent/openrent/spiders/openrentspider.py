@@ -120,7 +120,7 @@ class OpenRentSpider(scrapy.Spider):
                 }
             elif response.status == 429:
                 self.counter += 1
-                if self.counter >= 50:
+                if self.counter >= 30:
                     return
         except:
             yield {
