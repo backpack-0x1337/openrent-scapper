@@ -27,6 +27,7 @@ class OpenRentSpider(scrapy.Spider):
     counter = 0
     end_of_deck_counter = 0
     custom_settings = {
+
         # 'DOWNLOAD_DELAY': 1,
         # 'AUTOTHROTTLE_ENABLED': False,
         # 'RANDOMIZE_DOWNLOAD_DELAY': False,
