@@ -25,7 +25,7 @@ class OpenRentSpider(scrapy.Spider):
     handle_httpstatus_list = [404, 429]
     counter = 0
     custom_settings = {
-        'DOWNLOAD_DELAY': 2,
+        'DOWNLOAD_DELAY': 1,
         'AUTOTHROTTLE_ENABLED': False,
         'RANDOMIZE_DOWNLOAD_DELAY': False,
         'FEEDS': {
