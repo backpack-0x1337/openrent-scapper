@@ -16,17 +16,18 @@ def get_last_property_id():
 
 class OpenRentSpider(scrapy.Spider):
     name = 'openrent'
-    current_id = get_last_property_id() + 1
+    current_id = get_last_property_id() + 1 + 18000010
     total_property = 1800001
     max_id = current_id + total_property
     base_url = 'https://www.openrent.co.uk/'
     start_url = base_url + str(current_id)
     start_urls = [start_url]
     handle_httpstatus_list = [404, 429]
+    counter = 0
     custom_settings = {
-        'DOWNLOAD_DELAY': 2,
-        'AUTOTHROTTLE_ENABLED': False,
-        'RANDOMIZE_DOWNLOAD_DELAY': False,
+        # 'DOWNLOAD_DELAY': 2,
+        # 'AUTOTHROTTLE_ENABLED': False,
+        # 'RANDOMIZE_DOWNLOAD_DELAY': False,
         'FEEDS': {
             'openrent-p.csv': {
                 'format': 'csv',
@@ -45,6 +46,7 @@ class OpenRentSpider(scrapy.Spider):
         try:
             if response.status != 404 and not response.xpath(
                     "//div[@class='alert alert-warning mt-1']/p/text()").extract():
+                self.counter = 0
 
                 sh.append_row([response.url, response.css('h1.property-title::text').get(), self.current_id,
                                response.css('h1.property-title::text').get().split(' ')[-1],
@@ -97,6 +99,7 @@ class OpenRentSpider(scrapy.Spider):
                                                           '%d %B %Y').strftime('%Y%m%d'),
                                response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                                response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]])
+                self.counter = 0
                 yield {
                     'link': response.url,
                     'title': response.css('h1.property-title::text').get(),
@@ -115,6 +118,10 @@ class OpenRentSpider(scrapy.Spider):
                     'Furnishing': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                     'EPC Rating': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]
                 }
+            elif response.status == 429:
+                self.counter += 1
+                if self.counter >= 50:
+                    return
         except:
             yield {
                 'link': 'error',
