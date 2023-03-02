@@ -1,5 +1,6 @@
 import datetime
 import os
+from time import sleep
 
 import scrapy
 import re
@@ -16,7 +17,7 @@ def get_last_property_id():
 
 class OpenRentSpider(scrapy.Spider):
     name = 'openrent'
-    current_id = get_last_property_id() + 1
+    current_id = get_last_property_id() + 1 + 10000000
     total_property = 1800001
     max_id = current_id + total_property
     base_url = 'https://www.openrent.co.uk/'
@@ -24,10 +25,11 @@ class OpenRentSpider(scrapy.Spider):
     start_urls = [start_url]
     handle_httpstatus_list = [404, 429]
     counter = 0
+    end_of_deck_counter = 0
     custom_settings = {
-        'DOWNLOAD_DELAY': 1,
-        'AUTOTHROTTLE_ENABLED': False,
-        'RANDOMIZE_DOWNLOAD_DELAY': False,
+        # 'DOWNLOAD_DELAY': 1,
+        # 'AUTOTHROTTLE_ENABLED': False,
+        # 'RANDOMIZE_DOWNLOAD_DELAY': False,
         'FEEDS': {
             'openrent-p.csv': {
                 'format': 'csv',
@@ -47,11 +49,11 @@ class OpenRentSpider(scrapy.Spider):
 
             if response.status == 429:
                 self.counter += 1
-                if self.counter >= 30:
-                    return
+
             elif response.status != 404 and not response.xpath(
                     "//div[@class='alert alert-warning mt-1']/p/text()").extract():
                 self.counter = 0
+                self.end_of_deck_counter = 0
 
                 sh.append_row([response.url, response.css('h1.property-title::text').get(), self.current_id,
                                response.css('h1.property-title::text').get().split(' ')[-1],
@@ -105,6 +107,7 @@ class OpenRentSpider(scrapy.Spider):
                                response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                                response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]])
                 self.counter = 0
+                self.end_of_deck_counter = 0
                 yield {
                     'link': response.url,
                     'title': response.css('h1.property-title::text').get(),
@@ -123,6 +126,12 @@ class OpenRentSpider(scrapy.Spider):
                     'Furnishing': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                     'EPC Rating': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]
                 }
+            elif response.status == 404:
+                self.end_of_deck_counter += 1
+
+
+
+
         except:
             yield {
                 'link': 'error',
@@ -142,5 +151,15 @@ class OpenRentSpider(scrapy.Spider):
         self.current_id += 1
         next_url = self.base_url + str(self.current_id)
 
-        if self.current_id < self.max_id:
-            yield scrapy.Request(next_url, callback=self.parse)
+        if self.counter >= 10:
+            self.counter = 0
+            sleep(60)
+        if self.end_of_deck_counter >= 30:
+            rollback_url = self.base_url + str((self.current_id - self.end_of_deck_counter + 1))
+            self.end_of_deck_counter = 0
+            sleep(60 * 24)
+            print('sleeping')
+            yield scrapy.Request(rollback_url, callback=self.parse, dont_filter=True)
+
+        elif self.current_id < self.max_id:
+            yield scrapy.Request(next_url, callback=self.parse, dont_filter = True)
