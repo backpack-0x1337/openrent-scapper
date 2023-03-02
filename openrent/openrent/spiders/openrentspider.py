@@ -39,10 +39,6 @@ class OpenRentSpider(scrapy.Spider):
         }
     }
 
-    def isLetAgreed(self, response):
-        if response.css('div.alert.alert-warning.mt-1') != "":
-            return False
-        return True
 
     def parse(self, response):
         # response.css('strong::text').getall()[4],
