@@ -24,7 +24,7 @@ class OpenRentSpider(scrapy.Spider):
     start_url = base_url + str(current_id)
     start_urls = [start_url]
     handle_httpstatus_list = [404, 429]
-    counter = 0
+
     end_of_deck_counter = 0
     custom_settings = {
 
@@ -49,11 +49,11 @@ class OpenRentSpider(scrapy.Spider):
         try:
 
             if response.status == 429:
-                self.counter += 1
+                sleep(60)
+                self.current_id -= 1
 
             elif response.status != 404 and not response.xpath(
                     "//div[@class='alert alert-warning mt-1']/p/text()").extract():
-                self.counter = 0
                 self.end_of_deck_counter = 0
 
                 sh.append_row([response.url, response.css('h1.property-title::text').get(), self.current_id,
@@ -107,7 +107,6 @@ class OpenRentSpider(scrapy.Spider):
                                                           '%d %B %Y').strftime('%Y%m%d'),
                                response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                                response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]])
-                self.counter = 0
                 self.end_of_deck_counter = 0
                 yield {
                     'link': response.url,
@@ -152,9 +151,6 @@ class OpenRentSpider(scrapy.Spider):
         self.current_id += 1
         next_url = self.base_url + str(self.current_id)
 
-        if self.counter >= 10:
-            self.counter = 0
-            sleep(60)
         if self.end_of_deck_counter >= 30:
             rollback_url = self.base_url + str((self.current_id - self.end_of_deck_counter + 1))
             self.end_of_deck_counter = 0
