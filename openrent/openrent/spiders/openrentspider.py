@@ -44,7 +44,12 @@ class OpenRentSpider(scrapy.Spider):
     def parse(self, response):
         # response.css('strong::text').getall()[4],
         try:
-            if response.status != 404 and not response.xpath(
+
+            if response.status == 429:
+                self.counter += 1
+                if self.counter >= 30:
+                    return
+            elif response.status != 404 and not response.xpath(
                     "//div[@class='alert alert-warning mt-1']/p/text()").extract():
                 self.counter = 0
 
@@ -118,10 +123,6 @@ class OpenRentSpider(scrapy.Spider):
                     'Furnishing': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                     'EPC Rating': response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]
                 }
-            elif response.status == 429:
-                self.counter += 1
-                if self.counter >= 30:
-                    return
         except:
             yield {
                 'link': 'error',
