@@ -24,6 +24,7 @@ class OpenRentSpider(scrapy.Spider):
     start_url = base_url + str(current_id)
     start_urls = [start_url]
     handle_httpstatus_list = [404, 429]
+    rate_limit_counter = 0
 
     end_of_deck_counter = 0
     custom_settings = {
@@ -39,18 +40,18 @@ class OpenRentSpider(scrapy.Spider):
         }
     }
 
-
     def parse(self, response):
         # response.css('strong::text').getall()[4],
         try:
 
             if response.status == 429:
-                sleep(600)
-                self.current_id -= 1
+                self.rate_limit_counter += 1
+
 
             elif response.status != 404 and not response.xpath(
                     "//div[@class='alert alert-warning mt-1']/p/text()").extract():
                 self.end_of_deck_counter = 0
+                self.rate_limit_counter = 0
 
                 sh.append_row([response.url, response.css('h1.property-title::text').get(), self.current_id,
                                response.css('h1.property-title::text').get().split(' ')[-1],
@@ -104,6 +105,7 @@ class OpenRentSpider(scrapy.Spider):
                                response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-2],
                                response.xpath("//table[@class='table table-striped']//tr/td/text()").extract()[-1]])
                 self.end_of_deck_counter = 0
+                self.rate_limit_counter = 0
                 yield {
                     'link': response.url,
                     'title': response.css('h1.property-title::text').get(),
@@ -124,6 +126,7 @@ class OpenRentSpider(scrapy.Spider):
                 }
             elif response.status == 404:
                 self.end_of_deck_counter += 1
+                self.rate_limit_counter = 0
 
 
 
@@ -146,6 +149,9 @@ class OpenRentSpider(scrapy.Spider):
 
         self.current_id += 1
         next_url = self.base_url + str(self.current_id)
+        if self.rate_limit_counter >= 5:
+            self.current_id -= 4
+            sleep(300)  # sleep 3mins if we hit rate limit restriction on the website
 
         if self.end_of_deck_counter >= 30:
             rollback_url = self.base_url + str((self.current_id - self.end_of_deck_counter + 1))
@@ -155,4 +161,4 @@ class OpenRentSpider(scrapy.Spider):
             yield scrapy.Request(rollback_url, callback=self.parse, dont_filter=True)
 
         elif self.current_id < self.max_id:
-            yield scrapy.Request(next_url, callback=self.parse, dont_filter = True)
+            yield scrapy.Request(next_url, callback=self.parse, dont_filter=True)
